@@ -1,13 +1,10 @@
 import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.Scanner;
-import java.util.TreeSet;
 
 public final class Application {
 
     private final @NotNull LogPrototype consoleLogger, fileLogger;
-    private final TreeSet<Integer> indices = new TreeSet<>();
     static int index = 1;
 
     @Inject
@@ -16,48 +13,38 @@ public final class Application {
         this.fileLogger = fileLogWriter;
     }
 
-    public void waitForInput() {
+    public void waitForInput(String variant, String tag) {
         try (Scanner scanner = new Scanner(System.in)) {
             while (true) {
-                System.out.print("Enter your string: ");
+                Thread.sleep(200);
+                System.out.print("Enter your string or enter 'exit' to exit the program: ");
                 String string = scanner.next();
-
-                System.out.print("Enter tag for logging: ");
-                String tag = scanner.next();
-
-                System.out.print("""
-                        Choose logging method:
-                        1 - console logging
-                        2 - logging into file
-                        3 - composite logging
-                        0 - exit
-                        """);
-                int variant = scanner.nextInt();
-
-                switch (variant) {
-                    case 1:
-                        consoleLogger.log(index, string, tag);
-                        index++;
-                        break;
-                    case 2:
-                        fileLogger.log(index, string, tag);
-                        index++;
-                        break;
-                    case 3:
-                        consoleLogger.log(index, string, tag);
-                        index++;
-                        fileLogger.log(index, string, tag);
-                        index++;
-                        break;
-                    case 0:
-                        return;
-                    default:
-                        System.out.println("Try again, please.");
-                        waitForInput();
+                if (string.equals("exit")){
+                    break;
+                }
+                else{
+                    switch (variant) {
+                        case "console":
+                            consoleLogger.log(index, string, tag);
+                            index++;
+                            break;
+                        case "file":
+                            fileLogger.log(index, string, tag);
+                            index++;
+                            break;
+                        case "composite":
+                            consoleLogger.log(index, string, tag);
+                            index++;
+                            fileLogger.log(index, string, tag);
+                            index++;
+                            break;
+                        default:
+                            System.out.println("Try again, please.");
+                    }
                 }
 
             }
-        } catch (IllegalStateException exception) {
+        } catch (IllegalStateException | InterruptedException exception) {
             exception.printStackTrace();
         }
     }
