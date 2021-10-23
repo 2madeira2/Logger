@@ -38,8 +38,6 @@ public final class Application {
                             fileLogger.log(index, string, tag);
                             index++;
                             break;
-                        default:
-                            System.out.println("Try again, please.");
                     }
                 }
 
